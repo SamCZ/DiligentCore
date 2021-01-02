@@ -375,10 +375,12 @@ struct ShaderResourceDesc
 
     ShaderResourceDesc(const char*          _Name,
                        SHADER_RESOURCE_TYPE _Type,
-                       Uint32               _ArraySize) noexcept :
+                       Uint32               _ArraySize,
+                       Uint32               _Size ) noexcept :
         Name{_Name},
         Type{_Type},
-        ArraySize{_ArraySize}
+        ArraySize{_ArraySize},
+        Size{_Size}
     {}
 #endif
 
@@ -391,6 +393,9 @@ struct ShaderResourceDesc
 
     /// Array size. For non-array resource this value is 1.
     Uint32               ArraySize DEFAULT_INITIALIZER(0);
+
+    /// Size of resource
+    Uint32               Size DEFAULT_INITIALIZER(0);
     // clang-format on
 };
 typedef struct ShaderResourceDesc ShaderResourceDesc;
