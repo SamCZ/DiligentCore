@@ -156,7 +156,7 @@ public:
 
     ShaderResourceDesc GetResourceDesc() const
     {
-        return ShaderResourceDesc{Name, GetShaderResourceType(Type), ArraySize};
+        return ShaderResourceDesc{Name, GetShaderResourceType(Type), ArraySize, BufferStaticSize};
     }
 
     RESOURCE_DIMENSION GetResourceDimension() const

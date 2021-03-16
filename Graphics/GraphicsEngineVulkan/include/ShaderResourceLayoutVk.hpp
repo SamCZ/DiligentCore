@@ -291,7 +291,7 @@ public:
 
         ShaderResourceDesc GetResourceDesc() const
         {
-            return ShaderResourceDesc{Name, SPIRVShaderResourceAttribs::GetShaderResourceType(Type), ArraySize};
+            return ShaderResourceDesc{Name, SPIRVShaderResourceAttribs::GetShaderResourceType(Type), ArraySize, 0};
         }
 
         RESOURCE_DIMENSION GetResourceDimension() const
