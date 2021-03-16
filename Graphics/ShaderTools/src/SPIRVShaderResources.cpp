@@ -122,12 +122,47 @@ SPIRVShaderResourceAttribs::SPIRVShaderResourceAttribs(const diligent_spirv_cros
     BindingDecorationOffset       {GetDecorationOffset(Compiler, Res, spv::Decoration::DecorationBinding)},
     DescriptorSetDecorationOffset {GetDecorationOffset(Compiler, Res, spv::Decoration::DecorationDescriptorSet)},
     BufferStaticSize              {_BufferStaticSize},
-    BufferStride                  {_BufferStride}
+    BufferStride                  {_BufferStride},
+	Variables					  {nullptr}
 // clang-format on
 {
     VERIFY(_SepSmplrOrImgInd == SPIRVShaderResourceAttribs::InvalidSepSmplrOrImgInd ||
                (_Type == ResourceType::SeparateSampler || _Type == ResourceType::SeparateImage),
            "Only separate images or separate samplers can be assinged valid SepSmplrOrImgInd value");
+
+    if(_Type == UniformBuffer) {
+		Variables = new std::vector<ShaderVariable>();
+		auto &type = Compiler.get_type(Res.base_type_id);
+		unsigned member_count = type.member_types.size();
+
+		Variables->resize(member_count);
+
+		for (unsigned i = 0; i < member_count; i++)
+		{
+			ShaderVariable variable;
+
+			auto &member_type = Compiler.get_type(type.member_types[i]);
+			variable.Size = Compiler.get_declared_struct_member_size(type, i);
+
+			// Get member offset within this struct.
+			variable.Offset = Compiler.type_struct_member_offset(type, i);
+
+			if (!member_type.array.empty())
+			{
+				// Get array stride, e.g. float4 foo[]; Will have array stride of 16 bytes.
+				variable.ArrayStride = Compiler.type_struct_member_array_stride(type, i);
+			}
+
+			if (member_type.columns > 1)
+			{
+				// Get bytes stride between columns (if column major), for float4x4 -> 16 bytes.
+				variable.MatrixStride = Compiler.type_struct_member_matrix_stride(type, i);
+			}
+			variable.Name = Compiler.get_member_name(type.self, i);
+
+			(*Variables)[i] = variable;
+		}
+    }
 }
 
 

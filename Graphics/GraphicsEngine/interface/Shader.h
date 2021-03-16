@@ -30,6 +30,9 @@
 /// \file
 /// Definition of the Diligent::IShader interface and related data structures
 
+#include <utility>
+#include <vector>
+
 #include "../../../Primitives/interface/FileStream.h"
 #include "../../../Primitives/interface/FlagEnum.h"
 #include "DeviceObject.h"
@@ -366,6 +369,28 @@ DILIGENT_TYPED_ENUM(SHADER_RESOURCE_TYPE, Uint8)
 };
 // clang-format on
 
+struct ShaderVariable
+{
+    std::string Name          DEFAULT_INITIALIZER(std::string());
+    size_t      Size          DEFAULT_INITIALIZER(0);
+    size_t      Offset        DEFAULT_INITIALIZER(0);
+    size_t      ArrayStride   DEFAULT_INITIALIZER(0);
+    size_t      MatrixStride  DEFAULT_INITIALIZER(0);
+
+#if DILIGENT_CPP_INTERFACE
+    ShaderVariable() noexcept
+    {}
+
+    ShaderVariable(std::string _Name, size_t _Size, size_t _Offset, size_t _ArrayStride, size_t _MatrixStride) noexcept :
+    Name{std::move(_Name)},
+    Size{_Size},
+    Offset{_Offset},
+    ArrayStride{_ArrayStride},
+    MatrixStride{_MatrixStride}
+    {}
+#endif
+};
+
 /// Shader resource description
 struct ShaderResourceDesc
 {
@@ -376,11 +401,13 @@ struct ShaderResourceDesc
     ShaderResourceDesc(const char*          _Name,
                        SHADER_RESOURCE_TYPE _Type,
                        Uint32               _ArraySize,
-                       Uint32               _Size ) noexcept :
+                       Uint32               _Size,
+                       std::vector<ShaderVariable>* _Variables = nullptr) noexcept :
         Name{_Name},
         Type{_Type},
         ArraySize{_ArraySize},
-        Size{_Size}
+        Size{_Size},
+        Variables{_Variables}
     {}
 #endif
 
@@ -396,6 +423,8 @@ struct ShaderResourceDesc
 
     /// Size of resource
     Uint32               Size DEFAULT_INITIALIZER(0);
+
+    std::vector<ShaderVariable>* Variables DEFAULT_INITIALIZER(nullptr);
     // clang-format on
 };
 typedef struct ShaderResourceDesc ShaderResourceDesc;

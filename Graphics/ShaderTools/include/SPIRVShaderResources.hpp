@@ -97,7 +97,7 @@ public:
 
 /* 24 */const Uint32                BufferStaticSize;
 /* 28 */const Uint32                BufferStride;
-/* 32 */ // End of structure
+/* 32 */std::vector<ShaderVariable>* Variables;
 
     // clang-format on
 
@@ -108,6 +108,11 @@ public:
                                Uint32                                _SamplerOrSepImgInd = InvalidSepSmplrOrImgInd,
                                Uint32                                _BufferStaticSize   = 0,
                                Uint32                                _BufferStride       = 0) noexcept;
+
+    ~SPIRVShaderResourceAttribs()
+	{
+		delete Variables;
+	}
 
     bool IsValidSepSamplerAssigned() const
     {
@@ -156,7 +161,7 @@ public:
 
     ShaderResourceDesc GetResourceDesc() const
     {
-        return ShaderResourceDesc{Name, GetShaderResourceType(Type), ArraySize, BufferStaticSize};
+        return ShaderResourceDesc{Name, GetShaderResourceType(Type), ArraySize, BufferStaticSize, Variables};
     }
 
     RESOURCE_DIMENSION GetResourceDimension() const
